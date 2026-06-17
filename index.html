@@ -7,80 +7,57 @@
     content="width=device-width, initial-scale=1.0"
   />
 
-  <title>Sweet JS Compiler</title>
+  <title>Sweet JS</title>
 
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="./style.css" />
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
 </head>
 
 <body>
 
-  <div class="app">
+  <main class="layout">
 
-    <main class="workspace">
+    <section class="editor-pane">
+      <div id="editor"></div>
+    </section>
 
-      <section class="editor-card">
+    <aside class="sidebar">
 
-        <div class="editor-header">
-          <div class="brand">
-            <div class="logo"></div>
-            <h2>Sweet JS</h2>
-          </div>
+      <div class="logs-header">
+        <span>Console</span>
+        <span id="status">Ready</span>
+      </div>
 
-          <div class="editor-status">
-            JavaScript Runtime
-          </div>
-        </div>
+      <div id="output"></div>
 
-        <div id="editor"></div>
+      <div class="actions">
 
-      </section>
+        <label class="checkbox">
+          <input
+            type="checkbox"
+            id="autorun"
+          />
+          <span>Auto</span>
+        </label>
 
-      <section class="console-card">
+        <button id="clear">
+          Clear
+        </button>
 
-        <div class="console-header">
-          <h3>Console</h3>
+        <button id="theme">
+          Theme
+        </button>
 
-          <span id="status">
-            Idle
-          </span>
-        </div>
+        <button id="run">
+          Run
+        </button>
 
-        <div id="output"></div>
+      </div>
 
-      </section>
+    </aside>
 
-    </main>
-
-    <div class="floating-actions">
-
-      <button id="clear">
-        Clear
-      </button>
-
-      <button id="theme">
-        Theme
-      </button>
-
-      <label class="switch">
-        <input
-          type="checkbox"
-          id="autorun"
-        />
-        <span>Auto</span>
-      </label>
-
-      <button
-        id="run"
-        class="run-btn"
-      >
-        ▶ Run
-      </button>
-
-    </div>
-
-  </div>
+  </main>
 
   <iframe
     id="sandbox"
