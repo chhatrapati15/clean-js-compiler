@@ -1,6 +1,7 @@
 let editor;
 
 const STORAGE_KEY = "sweetjs_code";
+const THEME_KEY = "sweetjs_theme";
 
 const els = {
   run: document.getElementById("run"),
@@ -12,7 +13,54 @@ const els = {
   sandbox: document.getElementById("sandbox"),
 };
 
-let debounceId;
+let debounceId = null;
+
+let isDark =
+  localStorage.getItem(THEME_KEY) !== "light";
+
+function setStatus(text) {
+  els.status.textContent = text;
+}
+
+function clearOutput() {
+  els.output.innerHTML = "";
+}
+
+function appendLine(type, message) {
+  const line = document.createElement("div");
+
+  line.className = `log-line log-${type}`;
+
+  line.textContent = message;
+
+  els.output.appendChild(line);
+
+  els.output.scrollTop =
+    els.output.scrollHeight;
+}
+
+function saveCode() {
+  try {
+    localStorage.setItem(
+      STORAGE_KEY,
+      editor.getValue()
+    );
+  } catch {}
+}
+
+function loadCode() {
+  try {
+    return (
+      localStorage.getItem(STORAGE_KEY) ||
+      `// Welcome to Sweet JS Compiler
+
+console.log("Hello World");
+`
+    );
+  } catch {
+    return `console.log("Hello World")`;
+  }
+}
 
 require.config({
   paths: {
@@ -24,83 +72,79 @@ require(["vs/editor/editor.main"], () => {
   editor = monaco.editor.create(
     document.getElementById("editor"),
     {
+      value: loadCode(),
+
       language: "javascript",
-      theme: "vs-dark",
+
+      theme: isDark
+        ? "vs-dark"
+        : "vs",
+
       automaticLayout: true,
+
       minimap: {
         enabled: true,
       },
-      fontSize: 14,
-      tabSize: 2,
-      wordWrap: "on",
-      value:
-`// Welcome to Sweet JS Compiler
 
-console.log("Hello World");
-`
+      fontSize: 14,
+
+      tabSize: 2,
+
+      wordWrap: "on",
+
+      smoothScrolling: true,
+
+      cursorBlinking: "smooth",
+
+      cursorSmoothCaretAnimation: "on",
+
+      formatOnPaste: true,
+
+      formatOnType: true,
+
+      roundedSelection: true,
+
+      scrollBeyondLastLine: false,
     }
   );
 
-  const saved = localStorage.getItem(STORAGE_KEY);
-
-  if (saved) {
-    editor.setValue(saved);
-  }
-
   editor.onDidChangeModelContent(() => {
-    localStorage.setItem(
-      STORAGE_KEY,
-      editor.getValue()
+    saveCode();
+
+    if (!els.autorun.checked) return;
+
+    clearTimeout(debounceId);
+
+    debounceId = setTimeout(
+      runCode,
+      800
     );
-
-    if (els.autorun.checked) {
-      clearTimeout(debounceId);
-
-      debounceId = setTimeout(
-        runCode,
-        700
-      );
-    }
   });
 
   editor.addCommand(
     monaco.KeyMod.CtrlCmd |
       monaco.KeyCode.Enter,
-    () => runCode()
+    () => {
+      runCode();
+    }
   );
 });
 
-function setStatus(text) {
-  els.status.textContent = text;
-}
-
-function clearOutput() {
-  els.output.innerHTML = "";
-}
-
-function appendLine(type, message) {
-  const div = document.createElement("div");
-
-  div.className = `log-line log-${type}`;
-
-  div.textContent = message;
-
-  els.output.appendChild(div);
-
-  els.output.scrollTop =
-    els.output.scrollHeight;
-}
-
 function runCode() {
+  if (!editor) return;
+
   const code = editor.getValue();
 
-  if (!code.trim()) return;
+  if (!code.trim()) {
+    setStatus("Nothing to Run");
+    return;
+  }
 
   clearOutput();
 
   setStatus("Running...");
 
-  const srcdoc = `
+  const sandboxDoc = `
 <!DOCTYPE html>
 <html>
 <body>
@@ -109,100 +153,121 @@ function runCode() {
 
 (async () => {
 
-const send =
-(type,msg) =>
+const send = (type,msg) =>
 parent.postMessage(
-  {type,msg},
-  "*"
+{
+type,
+msg
+},
+"*"
 );
 
 function safeStringify(obj){
 
- const seen = new WeakSet();
+const seen = new WeakSet();
 
- return JSON.stringify(
-  obj,
-  (key,val) => {
+return JSON.stringify(
+obj,
+(key,val)=>{
 
-   if(
-    typeof val === "object"
-    && val !== null
-   ){
+if(
+typeof val === "object" &&
+val !== null
+){
 
-    if(seen.has(val)){
-      return "[Circular]";
-    }
+if(seen.has(val)){
+return "[Circular]";
+}
 
-    seen.add(val);
-   }
+seen.add(val);
+}
 
-   return val;
-  },
-  2
- );
+return val;
+
+},
+2
+);
+
 }
 
 ["log","warn","error","info"]
 .forEach(method => {
 
- const original =
- console[method];
+const original =
+console[method];
 
- console[method] =
- (...args) => {
+console[method] =
+(...args) => {
 
-  send(
-   method,
-   args
-   .map(arg =>
-    typeof arg === "object"
-    ? safeStringify(arg)
-    : String(arg)
-   )
-   .join(" ")
-  );
+const output =
+args.map(arg => {
 
-  original(...args);
- };
+if(typeof arg === "object"){
+return safeStringify(arg);
+}
+
+return String(arg);
+
+}).join(" ");
+
+send(
+method,
+output
+);
+
+original.apply(
+console,
+args
+);
+
+};
 
 });
 
 try {
 
- const fn =
- new Function(
- \`
- return (async () => {
- ${code}
- })();
- \`
- );
+const fn =
+new Function(\`
+return (async () => {
+${code}
+})();
+\`);
 
- const result =
- await fn();
+const result =
+await fn();
 
- if(result !== undefined){
+if(
+result !== undefined
+){
 
-  send(
-   "log",
-   typeof result === "object"
-   ? safeStringify(result)
-   : String(result)
-  );
- }
+send(
+"info",
+typeof result === "object"
+? safeStringify(result)
+: String(result)
+);
 
- send("done","success");
+}
+
+send(
+"done",
+"success"
+);
 
 }
 catch(error){
 
- send(
-  "error",
-  error.stack ||
-  error.message
- );
+send(
+"error",
+error.stack ||
+error.message ||
+String(error)
+);
 
- send("done","error");
+send(
+"done",
+"error"
+);
 
 }
 
@@ -214,7 +279,8 @@ catch(error){
 </html>
 `;
 
-  els.sandbox.srcdoc = srcdoc;
+  els.sandbox.srcdoc =
+    sandboxDoc;
 }
 
 window.addEventListener(
@@ -230,7 +296,6 @@ window.addEventListener(
           ? "Completed"
           : "Error"
       );
-
       return;
     }
 
@@ -249,29 +314,34 @@ els.run.addEventListener(
 els.clear.addEventListener(
   "click",
   () => {
+    if (!editor) return;
+
     editor.setValue("");
+
     clearOutput();
+
+    setStatus("Cleared");
   }
 );
 
 els.theme.addEventListener(
   "click",
   () => {
-    const current =
-      document.body.dataset.theme;
+    isDark = !isDark;
 
-    if (current === "light") {
-      monaco.editor.setTheme(
-        "vs-dark"
-      );
+    monaco.editor.setTheme(
+      isDark
+        ? "vs-dark"
+        : "vs"
+    );
 
-      document.body.dataset.theme =
-        "dark";
-    } else {
-      monaco.editor.setTheme("vs");
-
-      document.body.dataset.theme =
-        "light";
-    }
+    localStorage.setItem(
+      THEME_KEY,
+      isDark
+        ? "dark"
+        : "light"
+    );
   }
 );
+
+setStatus("Ready");
