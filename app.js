@@ -141,12 +141,21 @@ require(["vs/editor/editor.main"], () => {
   });
 
   editor.addCommand(
-    monaco.KeyMod.CtrlCmd |
-      monaco.KeyCode.Enter,
-    () => {
-      runCode();
-    }
-  );
+  monaco.KeyMod.CtrlCmd |
+    monaco.KeyCode.Enter,
+  () => {
+    runCode();
+  }
+);
+
+editor.addCommand(
+  monaco.KeyMod.CtrlCmd |
+    monaco.KeyCode.KeyS,
+  () => {
+    saveCode();
+    runCode();
+  }
+);
 });
 
 function runCode() {
@@ -392,3 +401,20 @@ setStatus(
   "Ready",
   "#34d399"
 );
+
+window.addEventListener(
+  "keydown",
+  (e) => {
+    if (
+      (e.metaKey || e.ctrlKey) &&
+      e.key.toLowerCase() === "s"
+    ) {
+      e.preventDefault();
+
+      saveCode();
+
+      runCode();
+    }
+  }
+);
+
