@@ -5,11 +5,12 @@
 }
 
 :root{
-  --bg:#0d1117;
-  --panel:#111827;
-  --border:#1f2937;
+  --bg:#080b12;
+  --panel:#0f172a;
+  --panel-2:#111827;
+  --border:#202938;
   --text:#e5e7eb;
-  --muted:#9ca3af;
+  --muted:#94a3b8;
   --accent:#6366f1;
 }
 
@@ -28,17 +29,33 @@ body{
   sans-serif;
 }
 
+body{
+  padding:16px;
+}
+
 .layout{
-  height:100vh;
+  height:calc(100vh - 32px);
 
   display:grid;
 
   grid-template-columns:
   1fr 320px;
+
+  gap:16px;
 }
 
 .editor-pane{
-  height:100vh;
+  overflow:hidden;
+
+  border-radius:16px;
+
+  border:1px solid var(--border);
+
+  background:var(--panel);
+
+  box-shadow:
+  0 0 0 1px rgba(255,255,255,.02),
+  0 20px 40px rgba(0,0,0,.25);
 }
 
 #editor{
@@ -47,13 +64,20 @@ body{
 }
 
 .sidebar{
+  overflow:hidden;
+
   display:flex;
   flex-direction:column;
 
-  background:var(--panel);
+  border-radius:16px;
 
-  border-left:
-  1px solid var(--border);
+  border:1px solid var(--border);
+
+  background:var(--panel-2);
+
+  box-shadow:
+  0 0 0 1px rgba(255,255,255,.02),
+  0 20px 40px rgba(0,0,0,.25);
 }
 
 .logs-header{
@@ -89,14 +113,15 @@ body{
 }
 
 .log-line{
+  background:#151c29;
+
+  border:1px solid #1e2737;
+
+  border-radius:10px;
+
   padding:10px 12px;
 
   margin-bottom:8px;
-
-  border-radius:8px;
-
-  background:
-  rgba(255,255,255,.03);
 
   word-break:break-word;
 }
@@ -121,6 +146,7 @@ body{
 
   display:flex;
   align-items:center;
+
   gap:8px;
 
   padding:0 12px;
@@ -138,35 +164,40 @@ button{
 
   padding:0 14px;
 
-  background:#1f2937;
+  cursor:pointer;
+
+  background:#1b2434;
 
   color:white;
 
-  cursor:pointer;
-
-  transition:.2s;
+  transition:.15s ease;
 }
 
 button:hover{
-  background:#283548;
+  background:#253047;
 }
 
 #run{
   margin-left:auto;
 
   background:var(--accent);
+
+  font-weight:600;
 }
 
 #run:hover{
-  background:#5558e6;
+  background:#7377ff;
 }
 
 .checkbox{
   display:flex;
   align-items:center;
+
   gap:6px;
 
   font-size:14px;
+
+  color:var(--muted);
 }
 
 .checkbox input{
@@ -178,14 +209,14 @@ button:hover{
 }
 
 ::-webkit-scrollbar-thumb{
-  background:#2d3748;
+  background:#2a3447;
   border-radius:999px;
 }
 
 .monaco-editor,
 .monaco-editor-background,
 .monaco-editor .margin{
-  background:#0d1117 !important;
+  background:#0f172a !important;
 }
 
 @media(max-width:900px){
