@@ -91,7 +91,7 @@ require(["vs/editor/editor.main"], () => {
         enabled: false,
       },
 
-      fontSize: 16,
+      fontSize: 18,
 
       lineHeight: 28,
 
@@ -114,6 +114,10 @@ require(["vs/editor/editor.main"], () => {
       overviewRulerBorder: false,
 
       showFoldingControls: "never",
+      padding: {
+        top: 16,
+        bottom: 16
+      },
 
       scrollbar: {
         verticalScrollbarSize: 8,
