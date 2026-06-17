@@ -5,13 +5,17 @@
 }
 
 :root{
-  --bg:#1e1e1e;
-  --panel:#252526;
-  --panel-2:#2d2d30;
-  --border:#3e3e42;
-  --text:#d4d4d4;
-  --muted:#858585;
-  --accent:#0e639c;
+  --bg:#0a0a0a;
+  --panel:#111111;
+  --panel-2:#161616;
+  --border:#232323;
+
+  --text:#f3f4f6;
+  --muted:#8b8b8b;
+
+  --accent:#8b5cf6;
+  --success:#22c55e;
+  --error:#ef4444;
 }
 
 html,
@@ -24,7 +28,7 @@ body{
   color:var(--text);
 
   font-family:
-    "Segoe UI",
+    Inter,
     system-ui,
     sans-serif;
 }
@@ -40,19 +44,26 @@ body{
 
   grid-template-columns:
     minmax(0,1fr)
-    320px;
+    340px;
 
   gap:12px;
 }
 
+/* ---------------- */
+/* EDITOR */
+/* ---------------- */
+
 .editor-pane{
   overflow:hidden;
 
-  border-radius:10px;
+  background:var(--panel);
 
   border:1px solid var(--border);
 
-  background:var(--bg);
+  border-radius:16px;
+
+  box-shadow:
+    0 10px 40px rgba(0,0,0,.35);
 }
 
 #editor{
@@ -60,49 +71,68 @@ body{
   height:100%;
 }
 
+/* ---------------- */
+/* SIDEBAR */
+/* ---------------- */
+
 .sidebar{
   display:flex;
   flex-direction:column;
 
   overflow:hidden;
 
-  border-radius:10px;
+  background:var(--panel-2);
 
   border:1px solid var(--border);
 
-  background:var(--panel);
+  border-radius:16px;
+
+  box-shadow:
+    0 10px 40px rgba(0,0,0,.35);
 }
 
+/* ---------------- */
+/* HEADER */
+/* ---------------- */
+
 .logs-header{
-  height:48px;
+  height:54px;
 
   display:flex;
   align-items:center;
   justify-content:space-between;
 
-  padding:0 14px;
+  padding:0 16px;
 
-  background:var(--panel-2);
+  background:#1a1a1a;
 
   border-bottom:
     1px solid var(--border);
 
-  font-size:13px;
+  font-size:14px;
   font-weight:600;
 }
 
 #status{
-  color:#89d185;
+  color:var(--success);
+
+  font-size:13px;
+
+  font-weight:500;
 }
+
+/* ---------------- */
+/* OUTPUT */
+/* ---------------- */
 
 #output{
   flex:1;
 
   overflow:auto;
 
-  padding:12px;
+  padding:14px;
 
-  background:var(--bg);
+  background:#151515;
 
   font-family:
     "JetBrains Mono",
@@ -112,15 +142,15 @@ body{
 }
 
 .log-line{
-  padding:10px;
+  padding:12px;
 
-  margin-bottom:8px;
+  margin-bottom:10px;
 
-  background:#252526;
+  background:#1a1a1a;
 
-  border:1px solid #333;
+  border:1px solid #262626;
 
-  border-radius:6px;
+  border-radius:10px;
 
   line-height:1.5;
 
@@ -132,32 +162,36 @@ body{
 
   margin-right:8px;
 
-  color:#569cd6;
-
   font-size:11px;
 
   font-weight:600;
 
   text-transform:uppercase;
+
+  color:#8b5cf6;
 }
 
 .log-error{
   border-left:
-    3px solid #f14c4c;
+    3px solid var(--error);
 }
 
 .log-warn{
   border-left:
-    3px solid #cca700;
+    3px solid #f59e0b;
 }
 
 .log-info{
   border-left:
-    3px solid #3794ff;
+    3px solid #3b82f6;
 }
 
+/* ---------------- */
+/* ACTION BAR */
+/* ---------------- */
+
 .actions{
-  height:56px;
+  height:62px;
 
   display:flex;
   align-items:center;
@@ -166,48 +200,10 @@ body{
 
   padding:0 12px;
 
-  background:var(--panel-2);
+  background:#1a1a1a;
 
   border-top:
     1px solid var(--border);
-}
-
-button{
-  height:34px;
-
-  border:1px solid #555;
-
-  border-radius:6px;
-
-  padding:0 14px;
-
-  background:#3c3c3c;
-
-  color:var(--text);
-
-  cursor:pointer;
-
-  transition:.15s ease;
-}
-
-button:hover{
-  background:#4a4a4a;
-}
-
-#run{
-  margin-left:auto;
-
-  background:#0e639c;
-
-  border:1px solid #1177bb;
-
-  color:white;
-
-  font-weight:600;
-}
-
-#run:hover{
-  background:#1177bb;
 }
 
 .checkbox{
@@ -225,26 +221,75 @@ button:hover{
   cursor:pointer;
 }
 
+button{
+  height:36px;
+
+  border:none;
+
+  border-radius:10px;
+
+  padding:0 16px;
+
+  cursor:pointer;
+
+  background:#252525;
+
+  color:var(--text);
+
+  font-size:13px;
+
+  transition:.15s ease;
+}
+
+button:hover{
+  background:#303030;
+}
+
+#run{
+  margin-left:auto;
+
+  background:var(--accent);
+
+  color:white;
+
+  font-weight:600;
+}
+
+#run:hover{
+  background:#9f75ff;
+}
+
+/* ---------------- */
+/* SCROLLBAR */
+/* ---------------- */
+
 ::-webkit-scrollbar{
   width:8px;
   height:8px;
 }
 
+::-webkit-scrollbar-track{
+  background:transparent;
+}
+
 ::-webkit-scrollbar-thumb{
-  background:#424242;
+  background:#333;
+
   border-radius:999px;
 }
 
 ::-webkit-scrollbar-thumb:hover{
-  background:#555;
+  background:#444;
 }
 
-/* Monaco */
+/* ---------------- */
+/* MONACO */
+/* ---------------- */
 
 .monaco-editor,
 .monaco-editor-background,
 .monaco-editor .margin{
-  background:#1e1e1e !important;
+  background:#111111 !important;
 }
 
 .monaco-editor .current-line,
@@ -255,6 +300,10 @@ button:hover{
 .monaco-editor .margin-view-overlays .current-line-exact-margin{
   border:none !important;
 }
+
+/* ---------------- */
+/* MOBILE */
+/* ---------------- */
 
 @media(max-width:900px){
 
